@@ -534,4 +534,63 @@ the-forgotten/
 
 ---
 
-**下一步:** 创建 Godot 项目，导入资源并制作旋转原型。
+## 15. 完整 1-bit 渲染实现
+
+### 15.1 核心文件
+
+| 文件 | 路径 | 作用 |
+|------|------|------|
+| **主 Shader** | `assets/shaders/obra_dinn_postprocess.gdshader` | 完整版 Obra Dinn 风格后处理 |
+| **简化 Shader** | `assets/shaders/simple_1bit.gdshader` | 备用简化版 |
+| **相机脚本** | `assets/scripts/obra_dinn_camera.gd` | 自动计算射线并应用后处理 |
+| **使用说明** | `assets/shaders/README.md` | 详细配置文档 |
+
+### 15.2 技术特性
+
+#### 完整版 Shader 包含：
+- ✅ **3D 立方体投影抖动** - 基于视角方向的立体抖动
+- ✅ **旋转矩阵** - 避免抖动对齐世界轴
+- ✅ **深度边缘检测** - 基于深度缓冲的轮廓识别
+- ✅ **Sobel 亮度边缘** - 基于颜色变化的边缘
+- ✅ **相机射线重建** - 根据屏幕 UV 重建世界方向
+- ✅ **可调参数** - tiling, threshold, invert 等
+
+#### 相机脚本自动处理：
+- 创建 CanvasLayer + ColorRect 后处理层
+- 每帧计算视锥体四角射线方向
+- 生成 Bayer 4×4 抖动纹理
+- 自动更新 shader 参数
+
+### 15.3 快速使用
+
+```gdscript
+# Camera3D 节点
+extends ObraDinnCamera
+
+func _ready():
+    super._ready()
+    tiling = 192.0
+    edge_threshold = 0.1
+    invert_colors = false
+```
+
+### 15.4 与 Madalaski 教程的对应
+
+| Madalaski (Unity) | 本项目 (Godot) |
+|-------------------|----------------|
+| `Dither.shader` | `obra_dinn_postprocess.gdshader` |
+| `ObraDinn.cs` | `obra_dinn_camera.gd` |
+| `cubeProject()` | `cube_project()` (GLSL) |
+| `cylinderProject()` | `cylinder_project()` (GLSL) |
+| `edge()` | `detect_depth_edge()` + `sobel_edge()` |
+| C# `Camera.ViewportPointToRay` | GDScript `_get_ray_direction()` |
+
+### 15.5 性能建议
+
+- **完整版**: 适用于 PC，效果最佳
+- **简化版**: 如需提高帧率，切换到 `simple_1bit.gdshader`
+- **移动端**: 建议降低渲染分辨率或使用简化版
+
+---
+
+**下一步**: 创建 Godot 项目，测试渲染效果。
