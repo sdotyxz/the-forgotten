@@ -52,183 +52,202 @@
 | 地板 | 平铺图案，交替抖动 |
 | 墙壁 | 纯黑或纯白 |
 
-### 3.4 1-bit 风格实现详解
+### 3.4 1-bit 风格实现详解：全屏后处理方案
 
-#### 核心概念
-**1-bit** 意味着画面只使用 **1 位色深** —— 每个像素只有两种可能：
-- `0` = 纯黑 (#000000)
-- `1` = 纯白 (#FFFFFF)
+#### 核心思路
 
-**没有灰色、没有渐变、没有半透明。**
+**不在每个物体上写 Shader，只写 1 个全屏后处理 Shader**，同时实现：
+1. **边缘检测** (基于深度的 Sobel) - 物体轮廓始终清晰
+2. **抖动着色** (Bayer 矩阵) - 产生体积感，避免纯平面
+
+**为什么选后处理？**
+- ✅ 最快：不改动任何模型资源
+- ✅ 最稳：轮廓清晰，寻物游戏必备
+- ✅ Godot 4.6 Compatibility 完全支持
 
 #### Godot 4.6 实现步骤
 
 **1. 项目设置**
 ```
 项目 → 项目设置 → 渲染 → 纹理:
-└── 关闭 Canvas Textures (如果不需要)
+├── 关闭 Canvas Textures
+└── 视口 → 渲染 → 默认纹理过滤: Nearest
 
 渲染 → 环境:
 └── 默认环境: 新建环境，背景设为纯色(白或黑)
 ```
 
-**2. 相机设置 (关键)**
+**2. 相机设置**
 ```
 Camera3D 节点:
 ├── Projection: Orthogonal (正交投影)
-├── Size: 10-20 (根据场景大小调整)
-├── Position: (10, 10, 10) 等距位置
+├── Size: 10-20
+├── Position: (10, 10, 10)
 ├── Rotation: (-30°, 45°, 0°) 经典等距角度
-└── 关闭 Perspective (透视)
-```
-**等距角度公式:**
-- X 旋转: `-30°` (俯视角度)
-- Y 旋转: `45°` (侧面角度)
-- 组合产生经典 "2.5D" 等距视角
-
-**3. 材质设置 (关键)**
-
-创建两个基础材质资源:
-
-**`black_material.tres`** (黑色物体)
-```
-StandardMaterial3D:
-├── Albedo: #000000 (纯黑)
-├── Shading Mode: Unshaded (无光照)
-├── Disable Ambient Light: true
-└── Disable Receive Shadows: true
+└── 确保渲染深度缓冲: 项目设置 → 渲染 → 深度
 ```
 
-**`white_material.tres`** (白色物体)
-```
-StandardMaterial3D:
-├── Albedo: #FFFFFF (纯白)
-├── Shading Mode: Unshaded (无光照)
-├── Disable Ambient Light: true
-└── Disable Receive Shadows: true
-```
+**3. 创建后处理层**
 
-**重要:** 使用 **Unshaded** 模式，完全关闭 Godot 的光照计算，确保颜色就是纯黑白。
-
-#### 光影的表现方法
-
-既然不能用传统光照，如何表现 "光与影"？
-
-**方法 1: 材质本身区分 (推荐)**
+场景结构：
 ```
-面向 "光源" 的面 → 白色材质
-背向 "光源" 的面 → 黑色材质
-```
-每个模型手动指定材质，模拟固定光源方向。
-
-**方法 2: 抖动图案 (Dithering)**
-用棋盘格图案模拟 "灰度":
-```
-■□■□■□  50% 灰度效果
-□■□■□■
-■□■□■□
+MainScene
+├── Camera3D
+├── CafeEnvironment (3D场景)
+└── CanvasLayer (后处理层)
+    └── ColorRect (全屏矩形)
+        └── Material: ShaderMaterial (1-bit shader)
 ```
 
-在 Godot 中实现抖动的 3 种方式:
+ColorRect 设置：
+- `layout_mode`: Anchors
+- `anchors_preset`: Full Rect
+- `mouse_filter`: Pass (允许点击穿透到 3D 场景)
 
-| 方式 | 实现 | 适用场景 |
-|------|------|----------|
-| **A. 贴图抖动** | 制作黑白棋盘格纹理，应用到材质 | 地板、大面积表面 |
-| **B. Shader 抖动** | 后处理 shader，根据深度抖动 | 全局效果，自动 |
-| **C. 模型面片** | 交替使用黑白材质的三角形 | 物体表面的阴影 |
+**4. 1-bit 后处理 Shader**
 
-**方式 A (贴图抖动) 示例:**
-```gdscript
-# 创建 2x2 像素纹理
-var img = Image.create(2, 2, false, Image.FORMAT_RGB8)
-img.set_pixel(0, 0, Color.BLACK)
-img.set_pixel(1, 1, Color.BLACK)
-img.set_pixel(0, 1, Color.WHITE)
-img.set_pixel(1, 0, Color.WHITE)
-var tex = ImageTexture.create_from_image(img)
-material.albedo_texture = tex
-material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-```
-
-**方式 B (后处理 Shader) 推荐:**
 ```glsl
-// 全屏后处理 shader
 shader_type canvas_item;
 
-uniform sampler2D screen_texture;
-uniform float dither_scale = 1.0;
+uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
+uniform sampler2D depth_texture : hint_depth_texture, filter_nearest;
 
-// Bayer 4x4 抖动矩阵
+uniform float edge_threshold : hint_range(0.001, 0.1) = 0.02;
+uniform float dither_intensity : hint_range(0.0, 1.0) = 0.5;
+
+// 4x4 Bayer 抖动矩阵
 const float bayer[16] = float[](
-    0.0, 8.0, 2.0, 10.0,
-    12.0, 4.0, 14.0, 6.0,
-    3.0, 11.0, 1.0, 9.0,
-    15.0, 7.0, 13.0, 5.0
+    0.0,  8.0,  2.0,  10.0,
+    12.0, 4.0,  14.0, 6.0,
+    3.0,  11.0, 1.0,  9.0,
+    15.0, 7.0,  13.0, 5.0
 );
 
+// Sobel 边缘检测 (基于深度)
+float detect_edge(vec2 uv, vec2 screen_size) {
+    vec2 texel = 1.0 / screen_size;
+    
+    // 采样周围 9 个点
+    float d00 = texture(depth_texture, uv + vec2(-1, -1) * texel).r;
+    float d01 = texture(depth_texture, uv + vec2( 0, -1) * texel).r;
+    float d02 = texture(depth_texture, uv + vec2( 1, -1) * texel).r;
+    float d10 = texture(depth_texture, uv + vec2(-1,  0) * texel).r;
+    float d12 = texture(depth_texture, uv + vec2( 1,  0) * texel).r;
+    float d20 = texture(depth_texture, uv + vec2(-1,  1) * texel).r;
+    float d21 = texture(depth_texture, uv + vec2( 0,  1) * texel).r;
+    float d22 = texture(depth_texture, uv + vec2( 1,  1) * texel).r;
+    
+    // Sobel 算子
+    float gx = (d02 + 2.0*d12 + d22) - (d00 + 2.0*d10 + d20);
+    float gy = (d20 + 2.0*d21 + d22) - (d00 + 2.0*d01 + d02);
+    
+    return length(vec2(gx, gy));
+}
+
 void fragment() {
-    vec4 color = texture(screen_texture, SCREEN_UV);
-    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    vec3 screen_color = texture(screen_texture, SCREEN_UV).rgb;
+    float brightness = dot(screen_color, vec3(0.299, 0.587, 0.114));
     
-    // 应用抖动
-    ivec2 pos = ivec2(mod(FRAGCOORD.xy * dither_scale, 4.0));
-    float threshold = bayer[pos.y * 4 + pos.x] / 16.0;
+    // 1. 边缘检测
+    vec2 screen_size = vec2(textureSize(screen_texture, 0));
+    float edge = detect_edge(SCREEN_UV, screen_size);
+    bool is_edge = edge > edge_threshold;
     
-    // 黑白化
-    float result = step(threshold, gray);
-    COLOR = vec4(vec3(result), 1.0);
+    // 2. 抖动计算
+    int x = int(FRAGCOORD.x) % 4;
+    int y = int(FRAGCOORD.y) % 4;
+    float threshold = bayer[y * 4 + x] / 16.0;
+    
+    // 调整亮度范围以适配抖动
+    float adjusted_brightness = brightness * (1.0 + dither_intensity) - dither_intensity * 0.5;
+    float dithered = step(threshold, adjusted_brightness);
+    
+    // 3. 合成：边缘=黑色，内部=抖动白
+    vec3 final_color = is_edge ? vec3(0.0) : vec3(dithered);
+    
+    COLOR = vec4(final_color, 1.0);
 }
 ```
 
-**方法 3: 几何剪影 (最省事)**
-直接用黑白两色的几何体拼搭，不追求 "真实光影"，而是追求 **图形设计感**:
-- 黑色物体 = 阴影中的物体
-- 白色物体 = 光照下的物体
-- 黑白相邻 = 强烈的图形对比
+**5. 场景物体材质**
 
-#### 像素完美设置
-
-确保渲染锐利，无模糊:
-
+不需要特殊设置！保持默认即可：
 ```
-项目设置:
-├── 渲染 → 纹理 → 画布纹理: 关闭 Filter
-├── 渲染 → 抗锯齿: 关闭 (或使用 FXAA，但可能模糊)
-└── 视口 → 渲染 → 默认纹理过滤: Nearest
-
-材质设置:
-└── Texture Filter: Nearest (最近邻，无插值)
+StandardMaterial3D:
+├── Albedo: 任何颜色 (后处理会转为黑白)
+├── Shading Mode: Per Pixel (默认)
+└── 不需要特殊处理
 ```
 
-#### 背景处理
+**注意**: 由于后处理基于深度检测边缘，确保：
+- 所有物体都有正确的几何体和材质
+- 相机 `Far` 和 `Near` 设置合理 (如 0.1 - 1000)
 
-**方案 1: 纯色背景**
+#### 针对寻物游戏的优化
+
+**1. 物体高亮机制**
+
+当鼠标悬停在可收集物品上时，需要清晰反馈。在 1-bit 风格下，可用 **反色** 效果：
+
+```glsl
+// 在 Shader 中添加
+uniform sampler2D highlight_mask : hint_default_black;
+
+void fragment() {
+    // ... 原有 1-bit 逻辑 ...
+    
+    // 检测高亮遮罩
+    float highlight = texture(highlight_mask, SCREEN_UV).r;
+    if (highlight > 0.5) {
+        // 反色：黑变白，白变黑
+        final_color = 1.0 - final_color;
+    }
+}
 ```
-WorldEnvironment:
-└── Background → Color: #FFFFFF 或 #000000
+
+实现方式：
+- 给可交互物品添加 `Viewport` 渲染层
+- 或用 `VisualInstance3D.layers` 分层渲染
+
+**2. 深度范围调整**
+
+场景较小 (咖啡馆)，调整深度检测灵敏度：
+```glsl
+uniform float depth_scale : hint_range(1.0, 100.0) = 10.0;
+// 在 detect_edge 中使用：
+float depth_diff = (d00 - d12) * depth_scale;
 ```
 
-**方案 2: 1-bit 渐变 (抖动)**
-使用大尺寸棋盘格纹理作为背景，营造 "伪渐变" 效果。
+**3. 可调节参数**
 
-#### 实例: 椅子在 1-bit 风格下的表现
-
-```
-传统 3D:        1-bit 风格:
-┌────────┐     ┌────────┐
-│ 渐变阴影│  →  │██████│  (黑色 = 阴影面)
-│ 材质贴图│     │░░░░░░│  (抖动 = 过渡)
-│ 光照计算│     │      │  (白色 = 受光面)
-└────────┘     └────────┘
+在 Shader 中添加参数方便调试：
+```glsl
+uniform float brightness_threshold : hint_range(0.0, 1.0) = 0.5;
+uniform bool invert_colors : hint_default(false);
 ```
 
-**具体实现:**
-1. 导入 KayKit `chair_A.gltf`
-2. 删除原材质，创建新材质
-3. 靠背 → `white_material` (面向光源)
-4. 座面 → `white_material` (顶面)
-5. 椅腿 → `black_material` (侧面/背面)
-6. 腿部阴影区域 → 小面积 `black_material` 几何体贴片
+#### 与传统方案对比
+
+| 方案 | 实现难度 | 旋转穿帮 | 寻物清晰度 | 立体感 |
+|------|---------|---------|-----------|--------|
+| Unshaded 固定材质 | ⭐ 极低 | ✅ 无 | ⭐⭐ 一般 | ❌ 平面 |
+| Toon Shading | ⭐⭐ 低 | ⚠️ 有 | ⭐⭐ 一般 | ⭐⭐ 中等 |
+| **后处理 (推荐)** | ⭐⭐ 低 | ✅ 无 | ⭐⭐⭐ 最佳 | ⭐⭐⭐ 好 |
+| 完整 Obra Dinn | ⭐⭐⭐⭐ 高 | ✅ 低 | ⭐⭐⭐ 好 | ⭐⭐⭐⭐ 最佳 |
+
+#### 故障排除
+
+**Q: 边缘检测不工作？**
+- 检查项目设置 → 渲染 → 深度缓冲是否启用
+- 确保相机 `near` 和 `far` 差距不要太大
+
+**Q: 抖动太密/太疏？**
+- 调整 `dither_intensity` 参数
+- 或修改 `adjusted_brightness` 的计算公式
+
+**Q: 小物体看不清？**
+- 降低 `edge_threshold` 让边缘更明显
+- 或使用纯色物体 (黑白对比强烈)
 
 ---
 
