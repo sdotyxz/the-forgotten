@@ -541,7 +541,6 @@ the-forgotten/
 | 文件 | 路径 | 作用 |
 |------|------|------|
 | **主 Shader** | `assets/shaders/obra_dinn_postprocess.gdshader` | 完整版 Obra Dinn 风格后处理 |
-| **简化 Shader** | `assets/shaders/simple_1bit.gdshader` | 备用简化版 |
 | **相机脚本** | `assets/scripts/obra_dinn_camera.gd` | 自动计算射线并应用后处理 |
 | **使用说明** | `assets/shaders/README.md` | 详细配置文档 |
 
@@ -588,8 +587,8 @@ func _ready():
 ### 15.5 性能建议
 
 - **完整版**: 适用于 PC，效果最佳
-- **简化版**: 如需提高帧率，切换到 `simple_1bit.gdshader`
-- **移动端**: 建议降低渲染分辨率或使用简化版
+- 如需提高帧率，可降低渲染分辨率或关闭抗锯齿
+- **移动端**: 建议降低渲染分辨率
 
 ---
 

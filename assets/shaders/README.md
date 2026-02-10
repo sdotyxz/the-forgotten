@@ -87,9 +87,9 @@ $Camera3D.post_process_material.set_shader_parameter("dither_texture", blue_nois
 - 调整 `tiling` 参数 (32-512)
 
 ### 性能问题
-- 使用简化版 shader：`simple_1bit.gdshader`
 - 降低渲染分辨率
 - 关闭抗锯齿
+- 减少场景复杂度
 
 ## 进阶：手动设置后处理
 
