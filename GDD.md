@@ -52,6 +52,184 @@
 | 地板 | 平铺图案，交替抖动 |
 | 墙壁 | 纯黑或纯白 |
 
+### 3.4 1-bit 风格实现详解
+
+#### 核心概念
+**1-bit** 意味着画面只使用 **1 位色深** —— 每个像素只有两种可能：
+- `0` = 纯黑 (#000000)
+- `1` = 纯白 (#FFFFFF)
+
+**没有灰色、没有渐变、没有半透明。**
+
+#### Godot 4.6 实现步骤
+
+**1. 项目设置**
+```
+项目 → 项目设置 → 渲染 → 纹理:
+└── 关闭 Canvas Textures (如果不需要)
+
+渲染 → 环境:
+└── 默认环境: 新建环境，背景设为纯色(白或黑)
+```
+
+**2. 相机设置 (关键)**
+```
+Camera3D 节点:
+├── Projection: Orthogonal (正交投影)
+├── Size: 10-20 (根据场景大小调整)
+├── Position: (10, 10, 10) 等距位置
+├── Rotation: (-30°, 45°, 0°) 经典等距角度
+└── 关闭 Perspective (透视)
+```
+**等距角度公式:**
+- X 旋转: `-30°` (俯视角度)
+- Y 旋转: `45°` (侧面角度)
+- 组合产生经典 "2.5D" 等距视角
+
+**3. 材质设置 (关键)**
+
+创建两个基础材质资源:
+
+**`black_material.tres`** (黑色物体)
+```
+StandardMaterial3D:
+├── Albedo: #000000 (纯黑)
+├── Shading Mode: Unshaded (无光照)
+├── Disable Ambient Light: true
+└── Disable Receive Shadows: true
+```
+
+**`white_material.tres`** (白色物体)
+```
+StandardMaterial3D:
+├── Albedo: #FFFFFF (纯白)
+├── Shading Mode: Unshaded (无光照)
+├── Disable Ambient Light: true
+└── Disable Receive Shadows: true
+```
+
+**重要:** 使用 **Unshaded** 模式，完全关闭 Godot 的光照计算，确保颜色就是纯黑白。
+
+#### 光影的表现方法
+
+既然不能用传统光照，如何表现 "光与影"？
+
+**方法 1: 材质本身区分 (推荐)**
+```
+面向 "光源" 的面 → 白色材质
+背向 "光源" 的面 → 黑色材质
+```
+每个模型手动指定材质，模拟固定光源方向。
+
+**方法 2: 抖动图案 (Dithering)**
+用棋盘格图案模拟 "灰度":
+```
+■□■□■□  50% 灰度效果
+□■□■□■
+■□■□■□
+```
+
+在 Godot 中实现抖动的 3 种方式:
+
+| 方式 | 实现 | 适用场景 |
+|------|------|----------|
+| **A. 贴图抖动** | 制作黑白棋盘格纹理，应用到材质 | 地板、大面积表面 |
+| **B. Shader 抖动** | 后处理 shader，根据深度抖动 | 全局效果，自动 |
+| **C. 模型面片** | 交替使用黑白材质的三角形 | 物体表面的阴影 |
+
+**方式 A (贴图抖动) 示例:**
+```gdscript
+# 创建 2x2 像素纹理
+var img = Image.create(2, 2, false, Image.FORMAT_RGB8)
+img.set_pixel(0, 0, Color.BLACK)
+img.set_pixel(1, 1, Color.BLACK)
+img.set_pixel(0, 1, Color.WHITE)
+img.set_pixel(1, 0, Color.WHITE)
+var tex = ImageTexture.create_from_image(img)
+material.albedo_texture = tex
+material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+```
+
+**方式 B (后处理 Shader) 推荐:**
+```glsl
+// 全屏后处理 shader
+shader_type canvas_item;
+
+uniform sampler2D screen_texture;
+uniform float dither_scale = 1.0;
+
+// Bayer 4x4 抖动矩阵
+const float bayer[16] = float[](
+    0.0, 8.0, 2.0, 10.0,
+    12.0, 4.0, 14.0, 6.0,
+    3.0, 11.0, 1.0, 9.0,
+    15.0, 7.0, 13.0, 5.0
+);
+
+void fragment() {
+    vec4 color = texture(screen_texture, SCREEN_UV);
+    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    
+    // 应用抖动
+    ivec2 pos = ivec2(mod(FRAGCOORD.xy * dither_scale, 4.0));
+    float threshold = bayer[pos.y * 4 + pos.x] / 16.0;
+    
+    // 黑白化
+    float result = step(threshold, gray);
+    COLOR = vec4(vec3(result), 1.0);
+}
+```
+
+**方法 3: 几何剪影 (最省事)**
+直接用黑白两色的几何体拼搭，不追求 "真实光影"，而是追求 **图形设计感**:
+- 黑色物体 = 阴影中的物体
+- 白色物体 = 光照下的物体
+- 黑白相邻 = 强烈的图形对比
+
+#### 像素完美设置
+
+确保渲染锐利，无模糊:
+
+```
+项目设置:
+├── 渲染 → 纹理 → 画布纹理: 关闭 Filter
+├── 渲染 → 抗锯齿: 关闭 (或使用 FXAA，但可能模糊)
+└── 视口 → 渲染 → 默认纹理过滤: Nearest
+
+材质设置:
+└── Texture Filter: Nearest (最近邻，无插值)
+```
+
+#### 背景处理
+
+**方案 1: 纯色背景**
+```
+WorldEnvironment:
+└── Background → Color: #FFFFFF 或 #000000
+```
+
+**方案 2: 1-bit 渐变 (抖动)**
+使用大尺寸棋盘格纹理作为背景，营造 "伪渐变" 效果。
+
+#### 实例: 椅子在 1-bit 风格下的表现
+
+```
+传统 3D:        1-bit 风格:
+┌────────┐     ┌────────┐
+│ 渐变阴影│  →  │██████│  (黑色 = 阴影面)
+│ 材质贴图│     │░░░░░░│  (抖动 = 过渡)
+│ 光照计算│     │      │  (白色 = 受光面)
+└────────┘     └────────┘
+```
+
+**具体实现:**
+1. 导入 KayKit `chair_A.gltf`
+2. 删除原材质，创建新材质
+3. 靠背 → `white_material` (面向光源)
+4. 座面 → `white_material` (顶面)
+5. 椅腿 → `black_material` (侧面/背面)
+6. 腿部阴影区域 → 小面积 `black_material` 几何体贴片
+
 ---
 
 ## 4. 美术资源
