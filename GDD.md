@@ -1,161 +1,161 @@
 # THE FORGOTTEN
-## Game Design Document
-**For:** Mini Jam 204: Café  
-**Theme:** Café  
-**Duration:** 72 Hours  
-**Engine:** Godot 4.6  
-**Visual Style:** 1-bit Isometric 3D
+## 游戏设计文档 (GDD)
+**赛事:** Mini Jam 204: Café  
+**主题:** 咖啡馆  
+**开发周期:** 72 小时  
+**引擎:** Godot 4.6  
+**美术风格:** 1-bit 像素风等距 3D
 
 ---
 
-## 1. Elevator Pitch
+## 1. 电梯演讲
 
-A minimalist hidden object game set in a café. Players rotate a 1-bit isometric scene to find lost items scattered among tables, chairs, and patrons. Different angles reveal different secrets.
+一款极简风的寻物解谜游戏，场景设定在咖啡馆中。玩家通过旋转 1-bit 等距视角的场景，在桌椅和顾客之间寻找失落的物品。不同的角度会揭示不同的秘密。
 
-**Hook:** *What you see depends on where you stand.*
+**核心钩子:** *所见取决于所立之处。*
 
 ---
 
-## 2. Core Loop
+## 2. 核心循环
 
 ```
-Find Item List → Rotate Scene → Spot Hidden Item → Click to Collect → Next Level
+查看物品清单 → 旋转场景 → 发现隐藏物品 → 点击收集 → 下一关
 ```
 
-1. Each level shows 3-5 items to find (listed at top)
-2. Player rotates the café scene freely (mouse drag)
-3. Items may be hidden behind furniture or camouflaged
-4. Click to collect found items
-5. Find all items to unlock next level
+1. 每关显示 3-5 个待找物品（列在屏幕顶部）
+2. 玩家自由旋转咖啡馆场景（鼠标拖动）
+3. 物品可能藏在家具后面或与背景融为一体
+4. 点击收集找到的物品
+5. 找齐所有物品解锁下一关
 
 ---
 
-## 3. Visual Style
+## 3. 美术风格
 
-### 3.1 Art Direction
-- **1-bit monochrome:** Pure black and white, no gray
-- **Isometric 3D:** 45° angle, orthographic camera
-- **Dithering patterns:** Use checkerboard patterns for depth/shadows
-- **Pixel perfect:** Crisp edges, retro Macintosh aesthetic
+### 3.1 美术方向
+- **1-bit 黑白:** 纯黑纯白，无灰色
+- **等距 3D:** 45° 视角，正交相机
+- **抖动图案:** 使用棋盘格图案表现深度和阴影
+- **像素完美:** 锐利边缘，复古 Macintosh 美学
 
-### 3.2 Visual Reference
-- Obra Dinn (1-bit dithering)
-- Papers, Please (UI style)
-- Isometric pixel art classics
+### 3.2 视觉参考
+- Obra Dinn（1-bit 抖动效果）
+- Papers, Please（UI 风格）
+- 经典等距像素艺术
 
-### 3.3 Scene Elements
-| Object | Style |
-|--------|-------|
-| Tables/Chair | Simple cubes, black outlines |
-| Customers | Blocky figures, minimal detail |
-| Items | Distinct silhouettes, slightly smaller scale |
-| Floor | Tiled pattern, alternating dither |
-| Walls | Solid black or white |
-
----
-
-## 4. Gameplay Mechanics
-
-### 4.1 Rotation
-- **Mouse drag** to rotate scene horizontally
-- **Smooth rotation** (not discrete steps)
-- Full 360° view
-- Auto-snap to nearest 90° when close (optional polish)
-
-### 4.2 Hidden Items
-**Item Types:**
-- 🔑 Keys
-- 📱 Phone
-- 📖 Book
-- 🎧 Headphones
-- 👓 Glasses
-- 💼 Bag
-
-**Hiding Mechanics:**
-| Mechanic | Description |
-|----------|-------------|
-| Occlusion | Item hidden behind table/chair from certain angles |
-| Camouflage | Black item on black surface, white on white |
-| Scale | Small items tucked in corners |
-| Reflection | Item visible only from specific angle |
-
-### 4.3 Difficulty Progression
-| Level | Cafe State | Items | Challenge |
-|-------|-----------|-------|-----------|
-| 1 | Empty, morning | 3 | Tutorial, obvious placements |
-| 2 | Few customers | 4 | Basic occlusion |
-| 3 | Busy lunch | 5 | Moving customers, camouflage |
-| 4 | Messy closing | 5 | Cluttered, similar-looking items |
-| 5 | Night mode | 5 | Limited visibility (spotlight) |
-
-### 4.4 Moving Customers (Level 3+)
-- Customers walk predetermined paths
-- Can temporarily block view of items
-- Adds timing element to observation
+### 3.3 场景元素
+| 物体 | 风格 |
+|------|------|
+| 桌子/椅子 | 简单立方体，黑色描边 |
+| 顾客 | 方块人物，极简细节 |
+| 物品 | 独特剪影，稍小的比例 |
+| 地板 | 平铺图案，交替抖动 |
+| 墙壁 | 纯黑或纯白 |
 
 ---
 
-## 5. Controls
+## 4. 游戏机制
 
-| Input | Action |
-|-------|--------|
-| Mouse Drag | Rotate scene |
-| Left Click | Select/Collect item |
-| Scroll Wheel | Zoom in/out (optional) |
-| R | Reset rotation |
-| H | Hint (highlight area) |
+### 4.1 旋转
+- **鼠标拖动** 水平旋转场景
+- **平滑旋转**（非离散步进）
+- 完整 360° 视角
+- 靠近 90° 倍数时自动吸附（可选优化）
+
+### 4.2 隐藏物品
+**物品类型:**
+- 🔑 钥匙
+- 📱 手机
+- 📖 书籍
+- 🎧 耳机
+- 👓 眼镜
+- 💼 包包
+
+**隐藏机制:**
+| 机制 | 说明 |
+|------|------|
+| 遮挡 | 物品在特定角度被桌椅遮挡 |
+| 伪装 | 黑色物品放在黑色表面，白色放在白色表面 |
+| 尺寸 | 小物品藏在角落 |
+| 反射 | 物品只在特定角度可见 |
+
+### 4.3 难度递进
+| 关卡 | 咖啡馆状态 | 物品数 | 挑战 |
+|------|-----------|--------|------|
+| 1 | 空旷，早晨 | 3 | 教学，明显位置 |
+| 2 | 少量顾客 | 4 | 基础遮挡 |
+| 3 | 午餐高峰 | 5 | 移动顾客，伪装 |
+| 4 | 打烊凌乱 | 5 | 杂乱，相似物品 |
+| 5 | 夜间模式 | 5 | 有限视野（聚光灯） |
+
+### 4.4 移动顾客（第3关起）
+- 顾客沿预定路径行走
+- 可能暂时遮挡物品视线
+- 为观察增加时机元素
 
 ---
 
-## 6. UI Design
+## 5. 操作控制
 
-### 6.1 HUD Elements
+| 输入 | 动作 |
+|------|------|
+| 鼠标拖动 | 旋转场景 |
+| 左键点击 | 选择/收集物品 |
+| 滚轮 | 放大/缩小（可选） |
+| R | 重置旋转 |
+| H | 提示（高亮区域） |
+
+---
+
+## 6. UI 设计
+
+### 6.1 HUD 元素
 ```
 ┌─────────────────────────────────┐
-│  FIND: 🔑 📱 📖 🎧 👓      3/5   │  ← Item checklist
+│  寻找: 🔑 📱 📖 🎧 👓      3/5   │  ← 物品清单
 ├─────────────────────────────────┤
 │                                 │
-│      [ ROTATING SCENE ]         │  ← Main viewport
+│      [ 旋转中的场景 ]            │  ← 主视口
 │                                 │
 ├─────────────────────────────────┤
-│  LEVEL 1    TIME: 02:34         │  ← Progress
+│  第 1 关    时间: 02:34         │  ← 进度
 └─────────────────────────────────┘
 ```
 
-### 6.2 Visual Language
-- **Font:** Pixel/bitmap font (monospace)
-- **Borders:** 2px black outlines
-- **Icons:** Simple 1-bit silhouettes
-- **Feedback:** Flash white on successful find
+### 6.2 视觉语言
+- **字体:** 像素/位图字体（等宽）
+- **边框:** 2px 黑色描边
+- **图标:** 简单 1-bit 剪影
+- **反馈:** 成功找到时闪烁白色
 
 ---
 
-## 7. Technical Specs
+## 7. 技术规格
 
-### 7.1 Godot Setup
-- **Renderer:** Compatibility (for pixel-perfect)
-- **Camera:** Orthographic, isometric angle
-- **Scene:** 3D with unshaded materials (black/white only)
+### 7.1 Godot 设置
+- **渲染器:** 兼容模式（像素完美）
+- **相机:** 正交，等距角度
+- **场景:** 3D 无光照材质（仅用黑白）
 
-### 7.2 Asset Pipeline
+### 7.2 资源管线
 ```
-Models: Simple primitives (Cube, Cylinder)
-├── Table (Box)
-├── Chair (Box + smaller boxes)
-├── Customer (Capsule + Box head)
-└── Items (Custom low-poly meshes)
+模型: 简单基础体（立方体、圆柱体）
+├── 桌子（方块）
+├── 椅子（方块 + 小方块）
+├── 顾客（胶囊体 + 方块头）
+└── 物品（自定义低模）
 
-Materials:
-├── Black (albedo: #000000)
-└── White (albedo: #FFFFFF)
+材质:
+├── 黑色（反照率: #000000）
+└── 白色（反照率: #FFFFFF）
 
-Post-Process:
-└── Dithering shader (optional)
+后处理:
+└── 抖动着色器（可选）
 ```
 
-### 7.3 Rotation Implementation
+### 7.3 旋转实现
 ```gdscript
-# Pseudo-code
+# 伪代码
 func _input(event):
     if event is InputEventMouseMotion and dragging:
         rotation.y += event.relative.x * sensitivity
@@ -163,72 +163,72 @@ func _input(event):
 
 ---
 
-## 8. Level Design
+## 8. 关卡设计
 
-### 8.1 Layout Template
+### 8.1 布局模板
 ```
-    [WINDOW]
-[BAR]         [TABLE2]
-              [TABLE3]
-    [TABLE1]  [TABLE4]
-          [DOOR]
+    [窗户]
+[吧台]         [桌2]
+               [桌3]
+    [桌1]      [桌4]
+          [门]
 ```
 
-### 8.2 Item Placement Rules
-- At least one item requires rotation to see
-- No item completely hidden (always visible from some angle)
-- Items never inside customers
-- Balance: 2 easy, 2 medium, 1 hard per level
+### 8.2 物品放置规则
+- 至少一个物品需要旋转才能看到
+- 没有完全被隐藏的物品（总有某个角度可见）
+- 物品绝不会在顾客体内
+- 平衡：每关 2 个简单、2 个中等、1 个困难
 
 ---
 
-## 9. Audio (Optional)
+## 9. 音效（可选）
 
-| Sound | Event |
-|-------|-------|
-| Click | Item found |
-| Whoosh | Rotation start/stop |
-| Chime | Level complete |
-| Ambient | Café background noise |
-
----
-
-## 10. Scope for 72 Hours
-
-### Must Have (Day 1-2)
-- [ ] Basic 3D scene with rotation
-- [ ] 3 levels
-- [ ] 5 item types
-- [ ] Click to collect
-- [ ] Win condition
-
-### Nice to Have (Day 3)
-- [ ] Moving customers
-- [ ] More levels (5 total)
-- [ ] Sound effects
-- [ ] Particle effects on find
-- [ ] Timer/Scoring
-
-### Cut if Time Runs Out
-- Night mode spotlight
-- Zoom functionality
-- Hint system
-- Save/load
+| 音效 | 触发事件 |
+|------|---------|
+| 点击声 | 找到物品 |
+| 呼呼声 | 旋转开始/停止 |
+| 清脆音 | 关卡完成 |
+| 环境音 | 咖啡馆背景噪音 |
 
 ---
 
-## 11. Risk Mitigation
+## 10. 72 小时开发范围
 
-| Risk | Mitigation |
-|------|------------|
-| 3D too complex | Use primitive shapes only |
-| Rotation feels bad | Test early, adjust sensitivity |
-| Items too hard to find | Add silhouette highlight on hover |
-| Performance | Low poly count, simple shaders |
+### 必须有（第 1-2 天）
+- [ ] 基础 3D 场景 + 旋转
+- [ ] 3 个关卡
+- [ ] 5 种物品
+- [ ] 点击收集
+- [ ] 胜利条件
+
+### 锦上添花（第 3 天）
+- [ ] 移动顾客
+- [ ] 更多关卡（共 5 个）
+- [ ] 音效
+- [ ] 找到时的粒子特效
+- [ ] 计时/计分
+
+### 时间不够就砍掉
+- 夜间模式聚光灯
+- 缩放功能
+- 提示系统
+- 存档/读档
 
 ---
 
-## 12. Project Structure
+## 11. 风险规避
+
+| 风险 | 规避措施 |
+|------|---------|
+| 3D 太复杂 | 只用基础几何体 |
+| 旋转手感差 | 尽早测试，调整灵敏度 |
+| 物品太难找 | 悬停时添加剪影高亮 |
+| 性能问题 | 低多边形，简单着色器 |
+
+---
+
+## 12. 项目结构
 
 ```
 the-forgotten/
@@ -250,4 +250,4 @@ the-forgotten/
 
 ---
 
-**Next Step:** Create Godot project and prototype rotation + basic scene.
+**下一步:** 创建 Godot 项目，制作旋转和基础场景的原型。
