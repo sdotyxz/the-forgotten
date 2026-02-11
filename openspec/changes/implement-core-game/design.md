@@ -13,9 +13,9 @@ The Forgotten 是一个 1-bit 等距视角的隐藏物品游戏。当前 Godot �
 - 完成第一关可玩版本
 
 **Non-Goals:**
-- 不导入外部美术资源（使用 CSG 几何体）
 - 不实现多关卡切换
 - 不实现音效系统
+- 不实现复杂动画系统（顾客仅使用 idle 循环）
 
 ## Decisions
 
@@ -26,12 +26,17 @@ The Forgotten 是一个 1-bit 等距视角的隐藏物品游戏。当前 Godot �
 - 支持深度边缘检测
 - Godot 4.6 Compatibility 模式完全支持
 
-### 场景搭建：CSGBox3D
-**选择：** 使用 Godot 内置 CSG 几何体搭建场景
+### 场景搭建：导入 3D 资产 (KayKit + Kenney)
+**选择：** 使用 KayKit Restaurant Bits 和 Kenney Mini Characters
 **原因：**
-- 无需导入外部模型
-- 快速原型验证
-- 易于调整布局
+- 高质量 1-bit 兼容的美术资源
+- 丰富的桌椅、吧台、角色模型
+- 适合咖啡馆主题
+- 支持网格对齐放置
+
+**资产来源：**
+- KayKit Restaurant Bits: 桌椅、吧台、柜台
+- Kenney Mini Characters: 12 个顾客角色 (idle 动画)
 
 ### 物品交互：射线检测
 **选择：** 使用 Camera3D 射线检测实现点击
@@ -42,8 +47,11 @@ The Forgotten 是一个 1-bit 等距视角的隐藏物品游戏。当前 Godot �
 
 ## Risks / Trade-offs
 
-**Risk:** CSG 几何体性能可能不如导入模型
-→ Mitigation: 场景简单，物体数量少，性能影响可接受
+**Risk:** 导入资产需要手动配置碰撞体和材质剥离
+→ Mitigation: 创建 asset_import_config.gd 批量处理
+
+**Risk:** GLTF 资源文件较大，首次导入较慢
+→ Mitigation: 使用 Godot 的 .import 缓存，只需导入一次
 
 **Risk:** 1-bit Shader 在低分辨率下效果不佳
 → Mitigation: 保持 1280x720 分辨率，抖动图案清晰可见
