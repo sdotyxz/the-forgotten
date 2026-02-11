@@ -1,9 +1,15 @@
 ## 1. 场景基础结构
 
-- [ ] 1.1 在 scenes/levels/ 目录创建 level_01_cafe.tscn 场景文件
-- [ ] 1.2 设置场景根节点（Node2D 或 Node3D，根据项目类型）
-- [ ] 1.3 配置摄像机位置和视角（俯视或斜45度视角）
-- [ ] 1.4 添加基础灯光（环境光 + 方向光/点光源）
+- [x] 1.1 在 scenes/levels/ 目录创建 level_01_cafe.tscn 场景文件
+- [x] 1.2 设置场景根节点（Node2D 或 Node3D，根据项目类型）
+- [x] 1.3 配置摄像机位置和视角（俯视或斜45度视角）
+- [x] 1.4 添加基础灯光（环境光 + 方向光/点光源）
+- [x] 1.5 添加地板和墙壁基础几何体
+- [x] 1.6 导入 KayKit Restaurant Bits 资源替换 CSG 几何体
+  - 地板: floor_kitchen.gltf (缩放 10x)
+  - 后墙: wall.gltf
+  - 左墙: wall_window_closed.gltf
+  - 右墙: wall.gltf
 
 ## 2. 吧台区域
 

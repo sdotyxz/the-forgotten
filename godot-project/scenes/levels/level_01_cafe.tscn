@@ -1,0 +1,102 @@
+[gd_scene load_steps=8 format=3 uid="uid://cafe01cafe01"]
+
+[ext_resource type="PackedScene" uid="uid://floor01" path="res://assets/models/kaykit_restaurant/floor_kitchen.gltf" id="floor_kitchen"]
+[ext_resource type="PackedScene" uid="uid://wall01" path="res://assets/models/kaykit_restaurant/wall.gltf" id="wall"]
+[ext_resource type="PackedScene" uid="uid://wallwin01" path="res://assets/models/kaykit_restaurant/wall_window_closed.gltf" id="wall_window"]
+
+[sub_resource type="Environment" id="Environment_cafe01"]
+background_color = Color(0.2, 0.2, 0.25, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.4, 0.4, 0.45, 1)
+ambient_light_energy = 0.3
+
+[sub_resource type="GDScript" id="GDScript_camera_rot"]
+script/source = "extends Camera3D
+
+var time = 0.0
+const ROTATION_DURATION = 8.0
+
+func _process(delta):
+    time += delta
+    if time > ROTATION_DURATION:
+        return
+    
+    var t = time / ROTATION_DURATION
+    var start_angle = PI / 4.0
+    var end_angle = 5.0 * PI / 4.0
+    var angle = start_angle + (end_angle - start_angle) * t
+    
+    var radius = 14.14
+    var height = 10.0
+    
+    position = Vector3(radius * cos(angle), height, radius * sin(angle))
+    look_at(Vector3.ZERO, Vector3.UP)
+"
+
+[node name="CafeScene" type="Node3D"]
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="floor_kitchen" parent="Floor" instance=ExtResource("floor_kitchen")]
+transform = Transform3D(10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0)
+
+[node name="BackWall" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+
+[node name="wall" parent="BackWall" instance=ExtResource("wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="LeftWall" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10, 0, 0)
+
+[node name="wall_window" parent="LeftWall" instance=ExtResource("wall_window")]
+
+[node name="RightWall" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 10, 0, 0)
+
+[node name="wall2" parent="RightWall" instance=ExtResource("wall")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, 0.408248, -0.57735, 0, 0.816497, 0.57735, 0.707107, -0.408248, 0.57735, 10, 10, 10)
+projection = 1
+size = 15.0
+fov = 75.0
+near = 0.01
+far = 1000.0
+script = SubResource("GDScript_camera_rot")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cafe01")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.408248, 0.57735, 0, 0.816497, 0.57735, -0.707107, -0.408248, 0.57735, 10, 10, 5)
+light_energy = 1.0
+shadow_enabled = true
+shadow_bias = 0.02
+shadow_normal_bias = 1.0
+directional_shadow_max_distance = 10.0
+directional_shadow_split_1 = 0.1
+directional_shadow_split_2 = 0.3
+directional_shadow_split_3 = 0.6
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.919145, -0.368449, 0.140292, 0, 0.356822, 0.934172, -0.393919, 0.858631, -0.327971, -5, 5, 5)
+light_energy = 0.4
+shadow_enabled = true
+shadow_bias = 0.05
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.447214, 0.894427, 0, -0.894427, -0.447214, 0, 5, -10)
+light_energy = 0.6
+shadow_enabled = true
+shadow_bias = 0.05
+
+[node name="BarArea" type="Node3D" parent="."]
+
+[node name="Tables" type="Node3D" parent="."]
+
+[node name="Customers" type="Node3D" parent="."]
+
+[node name="Windows" type="Node3D" parent="."]
+
+[node name="HiddenItems" type="Node3D" parent="."]
