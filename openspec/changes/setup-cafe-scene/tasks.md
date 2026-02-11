@@ -8,26 +8,31 @@
 ## 2. 吧台区域
 
 - [ ] 2.1 创建 BarArea 节点组
-- [ ] 2.2 导入 KayKit Restaurant Bits 吧台资源
-- [ ] 2.3 添加收银台（使用 KayKit 模型或 Sprite 占位）
-- [ ] 2.4 添加咖啡机（使用 KayKit Prototype Bits 或占位图形）
-- [ ] 2.5 添加收银员 NPC（使用 Kenney Mini Characters）
+- [ ] 2.2 导入 KayKit Restaurant Bits 吧台资源 (`counter.gltf`)
+- [ ] 2.3 添加收银台（使用 `counter.gltf` 或 Sprite 占位）
+- [ ] 2.4 添加咖啡机（使用 `coffee_machine.gltf` 或 Prototype Bits 占位）
+- [ ] 2.5 添加收银员 NPC（使用 Kenney `character_male_A.gltf`）
 - [ ] 2.6 调整吧台区域位置和大小
 
 ## 3. 桌椅布置
 
 - [ ] 3.1 创建 Tables 节点组
-- [ ] 3.2 导入 KayKit Restaurant Bits 桌椅资源
+- [ ] 3.2 导入 KayKit Restaurant Bits 桌椅资源：
+  - 双人桌：`table_small_A.gltf`, `table_small_B.gltf`
+  - 四人桌：`table_large_A.gltf`, `table_large_B.gltf`
+  - 椅子：`chair_A.gltf`, `chair_B.gltf`
 - [ ] 3.3 放置4张双人桌（靠墙或窗边位置）
 - [ ] 3.4 放置3-4张四人桌（中央区域）
-- [ ] 3.5 为每张桌子添加对应数量的椅子（KayKit 模型）
+- [ ] 3.5 为每张桌子添加对应数量的椅子（KayKit `chair_A.gltf` / `chair_B.gltf`）
 - [ ] 3.6 调整桌子间距，避免过于拥挤
 
 ## 4. 顾客布置
 
 - [ ] 4.1 创建 Customers 节点组
-- [ ] 4.2 导入 Kenney Mini Characters 资源
-- [ ] 4.3 添加7-8个顾客 NPC（从 Kenney Mini Characters 中选择）
+- [ ] 4.2 导入 Kenney Mini Characters 资源（选择7-8个不同变体）：
+  - 男性：`character_male_A.gltf` ~ `character_male_F.gltf`
+  - 女性：`character_female_A.gltf` ~ `character_female_F.gltf`
+- [ ] 4.3 添加7-8个顾客 NPC（从上述文件中选择不同变体）
 - [ ] 4.4 将顾客分配到不同桌子（部分桌子留空）
 - [ ] 4.5 调整顾客朝向（面向桌子或咖啡馆内部）
 - [ ] 4.6 为部分顾客添加站立姿势（可选）

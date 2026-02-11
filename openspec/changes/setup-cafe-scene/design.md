@@ -23,9 +23,18 @@
 ## Decisions
 
 **美术资源选择**：使用 KayKit 和 Kenney 资源包
-- **桌椅、吧台**: KayKit Restaurant Bits
-- **餐具、容器**: KayKit Restaurant Bits / Prototype Bits
-- **顾客 NPC**: Kenney Mini Characters
+
+| 物件类型 | 资源包 | 具体文件 |
+|---------|--------|---------|
+| **双人桌** | KayKit Restaurant Bits | `table_small_A.gltf` / `table_small_B.gltf` |
+| **四人桌** | KayKit Restaurant Bits | `table_large_A.gltf` / `table_large_B.gltf` |
+| **椅子** | KayKit Restaurant Bits | `chair_A.gltf` / `chair_B.gltf` |
+| **吧台** | KayKit Restaurant Bits | `counter.gltf` |
+| **咖啡机** | KayKit Restaurant Bits | `coffee_machine.gltf` 或 Prototype Bits |
+| **餐具/容器** | KayKit Restaurant Bits | `cup_A.gltf`, `plate_A.gltf` |
+| **收银员 NPC** | Kenney Mini Characters | `character_male_A.gltf` |
+| **顾客 NPC** | Kenney Mini Characters | `character_male_*.gltf`, `character_female_*.gltf` (7-8个不同变体) |
+
 - **理由**: 与 GDD 定义的美术风格一致，1-bit 黑白风格兼容
 
 **场景组织方式**：使用 Godot 的 Node2D/Node3D 层级结构组织场景
