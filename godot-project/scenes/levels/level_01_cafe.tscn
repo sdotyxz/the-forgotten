@@ -13,24 +13,47 @@ ambient_light_energy = 0.3
 [sub_resource type="GDScript" id="GDScript_camera_rot"]
 script/source = "extends Camera3D
 
-var time = 0.0
+var start_time = 0
 const ROTATION_DURATION = 8.0
+const START_ANGLE = PI / 4.0
+const END_ANGLE = 5.0 * PI / 4.0
+const RADIUS = 14.14
+const HEIGHT = 10.0
 
-func _process(delta):
-    time += delta
-    if time > ROTATION_DURATION:
+func _ready():
+    start_time = Time.get_ticks_msec()
+    # 设置初始位置
+    update_camera_position(0.0)
+
+func _process(_delta):
+    var elapsed = (Time.get_ticks_msec() - start_time) / 1000.0
+    if elapsed > ROTATION_DURATION:
         return
     
-    var t = time / ROTATION_DURATION
-    var start_angle = PI / 4.0
-    var end_angle = 5.0 * PI / 4.0
-    var angle = start_angle + (end_angle - start_angle) * t
+    var t = elapsed / ROTATION_DURATION
+    # 使用 smoothstep 让开始和结束更平滑
+    t = t * t * (3.0 - 2.0 * t)
     
-    var radius = 14.14
-    var height = 10.0
+    update_camera_position(t)
+
+func update_camera_position(t: float):
+    var angle = START_ANGLE + (END_ANGLE - START_ANGLE) * t
     
-    position = Vector3(radius * cos(angle), height, radius * sin(angle))
-    look_at(Vector3.ZERO, Vector3.UP)
+    var x = RADIUS * cos(angle)
+    var z = RADIUS * sin(angle)
+    
+    position = Vector3(x, HEIGHT, z)
+    
+    # 使用更稳定的 look_at 方法
+    var target = Vector3.ZERO
+    var up = Vector3.UP
+    
+    # 避免万向节锁：当视线接近垂直时调整 up 向量
+    var forward = (target - position).normalized()
+    if abs(forward.dot(Vector3.UP)) > 0.99:
+        up = Vector3.FORWARD
+    
+    look_at(target, up)
 "
 
 [node name="CafeScene" type="Node3D"]
