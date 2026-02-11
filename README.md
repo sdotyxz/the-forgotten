@@ -28,7 +28,12 @@
 
 ## 开发文档
 
-详见 [GDD.md](GDD.md) 完整设计文档。
+- [GDD.md](GDD.md) - 游戏设计文档
+- [OpenSpec 变更规划](openspec/changes/core-game-implementation/)
+  - [提案](openspec/changes/core-game-implementation/proposal.md)
+  - [需求规格](openspec/changes/core-game-implementation/specs/requirements.md)
+  - [技术设计](openspec/changes/core-game-implementation/design.md)
+  - [任务列表](openspec/changes/core-game-implementation/tasks.md)
 
 ## 开源协议
 
