@@ -1,0 +1,27 @@
+framework: generic
+
+project:
+  name: The Forgotten
+  description: 1-bit 等距寻物解谜游戏 - Mini Jam 204 Café
+
+context: |
+  语言：中文（简体）
+  所有产出物必须用简体中文撰写。
+  
+  技术栈：
+  - 引擎：Godot 4.6
+  - 语言：GDScript
+  - 渲染：1-bit 后处理 Shader
+  - 风格：等距 3D，黑白单色
+  
+  项目信息：
+  - Game Jam：Mini Jam 204 Café
+  - 主题：咖啡馆
+  - 核心机制：旋转场景寻找隐藏物品
+  - 美术参考：Obra Dinn, Papers Please
+
+changes:
+  base_dir: openspec/changes
+
+defaults:
+  author: sdon
