@@ -2,6 +2,11 @@
 
 本项目是 Godot 引擎开发的寻找隐藏物品游戏。需要为第一关"空旷早晨"搭建咖啡馆场景，作为教学关卡让玩家熟悉核心玩法。场景为纯静态展示，不需要交互功能。
 
+**美术资源清单（来自 GDD）：**
+- **KayKit Restaurant Bits**: 桌椅、吧台、餐具
+- **KayKit Prototype Bits**: 基础几何、容器
+- **Kenney Mini Characters**: 顾客
+
 ## Goals / Non-Goals
 
 **Goals:**
@@ -16,6 +21,12 @@
 - 不涉及游戏逻辑代码
 
 ## Decisions
+
+**美术资源选择**：使用 KayKit 和 Kenney 资源包
+- **桌椅、吧台**: KayKit Restaurant Bits
+- **餐具、容器**: KayKit Restaurant Bits / Prototype Bits
+- **顾客 NPC**: Kenney Mini Characters
+- **理由**: 与 GDD 定义的美术风格一致，1-bit 黑白风格兼容
 
 **场景组织方式**：使用 Godot 的 Node2D/Node3D 层级结构组织场景
 - 根节点：CafeScene (Node2D/Node3D)
