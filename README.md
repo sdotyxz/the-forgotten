@@ -29,11 +29,11 @@
 ## 开发文档
 
 - [GDD.md](GDD.md) - 游戏设计文档
-- [OpenSpec 变更规划](openspec/changes/core-game-implementation/)
-  - [提案](openspec/changes/core-game-implementation/proposal.md)
-  - [需求规格](openspec/changes/core-game-implementation/specs/requirements.md)
-  - [技术设计](openspec/changes/core-game-implementation/design.md)
-  - [任务列表](openspec/changes/core-game-implementation/tasks.md)
+- [OpenSpec 变更: 搭建咖啡厅场景](openspec/changes/setup-cafe-scene/)
+  - [提案](openspec/changes/setup-cafe-scene/proposal.md)
+  - [技术设计](openspec/changes/setup-cafe-scene/design.md)
+  - [需求规格](openspec/changes/setup-cafe-scene/specs/cafe-scene-setup/spec.md)
+  - [任务列表](openspec/changes/setup-cafe-scene/tasks.md)
 
 ## 开源协议
 
