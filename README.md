@@ -1,33 +1,35 @@
-# The Forgotten
+# The Forgotten (被遗忘之物)
 
-A minimalist hidden object game for Mini Jam 204: Café.
+一款为 Mini Jam 204: Café 制作的极简风寻物解谜游戏。
 
-## Concept
+## 核心概念
 
-*What you see depends on where you stand.*
+> *"所见取决于所立之处。"*
 
-Rotate a 1-bit isometric café scene to find lost items hidden among tables, chairs, and patrons. Different angles reveal different secrets.
+旋转 1-bit 等距视角的咖啡馆场景，在桌椅和顾客之间寻找失落的物品。不同的角度会揭示不同的秘密。
 
-## Game Jam
+## 游戏赛事
 
-- **Jam:** Mini Jam 204: Café
-- **Theme:** Café
-- **Duration:** 72 Hours (Feb 13-16, 2026)
-- **Engine:** Godot 4.6
-- **Visual Style:** 1-bit monochrome, isometric 3D
+| 项目 | 内容 |
+|------|------|
+| **赛事** | Mini Jam 204: Café |
+| **主题** | 咖啡馆 |
+| **开发周期** | 72 小时 (2026年2月13-16日) |
+| **引擎** | Godot 4.6 |
+| **美术风格** | 1-bit 单色, 等距 3D |
 
-## Controls
+## 操作说明
 
-| Input | Action |
-|-------|--------|
-| Mouse Drag | Rotate scene |
-| Left Click | Collect item |
-| R | Reset rotation |
+| 输入 | 动作 |
+|------|------|
+| 鼠标拖动 | 旋转场景 |
+| 左键点击 | 收集物品 |
+| R | 重置旋转 |
 
-## Development
+## 开发文档
 
-See [GDD.md](GDD.md) for full design document.
+详见 [GDD.md](GDD.md) 完整设计文档。
 
-## License
+## 开源协议
 
-MIT License - Game jam project.
+MIT License - Game Jam 项目
