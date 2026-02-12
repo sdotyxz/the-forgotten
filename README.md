@@ -1,4 +1,10 @@
-# The Forgotten (被遗忘之物)
+# The Forgotten (被遗忘之物) [已归档]
+
+> ⚠️ **本项目已归档** (2026-02-12)
+> 
+> 当前状态: 开发中 (Task 3/7 完成)
+> 
+> 归档原因: 重新整理 OpenSpec + OpenCode 工作流
 
 一款为 Mini Jam 204: Café 制作的极简风寻物解谜游戏。
 
