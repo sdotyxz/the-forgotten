@@ -13,12 +13,12 @@
 
 ## 2. 吧台区域
 
-- [ ] 2.1 创建 BarArea 节点组
-- [ ] 2.2 导入 KayKit Restaurant Bits 吧台资源 (`counter.gltf`)
-- [ ] 2.3 添加收银台（使用 `counter.gltf` 或 Sprite 占位）
-- [ ] 2.4 添加咖啡机（使用 `coffee_machine.gltf` 或 Prototype Bits 占位）
-- [ ] 2.5 添加收银员 NPC（使用 Kenney `character_male_A.gltf`）
-- [ ] 2.6 调整吧台区域位置和大小
+- [x] 2.1 创建 BarArea 节点组
+- [x] 2.2 导入 KayKit Restaurant Bits 吧台资源 (`counter.gltf`)
+- [x] 2.3 添加收银台（使用 `counter.gltf` 或 Sprite 占位）
+- [x] 2.4 添加咖啡机（使用 `coffee_machine.gltf` 或 Prototype Bits 占位）
+- [x] 2.5 添加收银员 NPC（使用 Kenney `character_male_A.gltf`）
+- [x] 2.6 调整吧台区域位置和大小
 
 ## 3. 桌椅布置
 

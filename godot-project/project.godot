@@ -6,7 +6,7 @@
 config/name="The Forgotten"
 config/description="1-bit 等距寻物解谜游戏 - Mini Jam 204 Café"
 config/version="0.1"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/levels/level_01_cafe.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://icon.svg"
@@ -20,7 +20,7 @@ window/stretch/aspect="expand"
 [rendering]
 renderer/rendering_method="mobile"
 textures/canvas_textures/default_texture_filter=0
-environment/defaults/default_clear_color=Color(1, 1, 1, 1)
+environment/defaults/default_clear_color=Color(1, 0.7, 0.8, 1)
 
 [input]
 rotate_scene_left={
